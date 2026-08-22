@@ -15,6 +15,7 @@ import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as AdminLoginRouteImport } from './routes/admin-login'
 import { Route as AuthenticatedMyRouteImport } from './routes/_authenticated/my'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminAssignmentsRouteImport } from './routes/admin/assignments'
 import { Route as AdminCompaniesRouteImport } from './routes/admin/companies'
 import { Route as AdminInternsRouteImport } from './routes/admin/interns'
 
@@ -47,6 +48,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminAssignmentsRoute = AdminAssignmentsRouteImport.update({
+  id: '/assignments',
+  path: '/assignments',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminCompaniesRoute = AdminCompaniesRouteImport.update({
   id: '/companies',
   path: '/companies',
@@ -63,6 +69,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteRouteWithChildren
   '/admin-login': typeof AdminLoginRoute
   '/my': typeof AuthenticatedMyRoute
+  '/admin/assignments': typeof AdminAssignmentsRoute
   '/admin/companies': typeof AdminCompaniesRoute
   '/admin/interns': typeof AdminInternsRoute
   '/admin/': typeof AdminIndexRoute
@@ -71,6 +78,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin-login': typeof AdminLoginRoute
   '/my': typeof AuthenticatedMyRoute
+  '/admin/assignments': typeof AdminAssignmentsRoute
   '/admin/companies': typeof AdminCompaniesRoute
   '/admin/interns': typeof AdminInternsRoute
   '/admin': typeof AdminIndexRoute
@@ -82,6 +90,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteRouteWithChildren
   '/admin-login': typeof AdminLoginRoute
   '/_authenticated/my': typeof AuthenticatedMyRoute
+  '/admin/assignments': typeof AdminAssignmentsRoute
   '/admin/companies': typeof AdminCompaniesRoute
   '/admin/interns': typeof AdminInternsRoute
   '/admin/': typeof AdminIndexRoute
@@ -93,6 +102,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin-login'
     | '/my'
+    | '/admin/assignments'
     | '/admin/companies'
     | '/admin/interns'
     | '/admin/'
@@ -101,6 +111,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin-login'
     | '/my'
+    | '/admin/assignments'
     | '/admin/companies'
     | '/admin/interns'
     | '/admin'
@@ -111,6 +122,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin-login'
     | '/_authenticated/my'
+    | '/admin/assignments'
     | '/admin/companies'
     | '/admin/interns'
     | '/admin/'
@@ -167,6 +179,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/assignments': {
+      id: '/admin/assignments'
+      path: '/assignments'
+      fullPath: '/admin/assignments'
+      preLoaderRoute: typeof AdminAssignmentsRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/companies': {
       id: '/admin/companies'
       path: '/companies'
@@ -196,12 +215,14 @@ const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 interface AdminRouteRouteChildren {
+  AdminAssignmentsRoute: typeof AdminAssignmentsRoute
   AdminCompaniesRoute: typeof AdminCompaniesRoute
   AdminInternsRoute: typeof AdminInternsRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminAssignmentsRoute: AdminAssignmentsRoute,
   AdminCompaniesRoute: AdminCompaniesRoute,
   AdminInternsRoute: AdminInternsRoute,
   AdminIndexRoute: AdminIndexRoute,
