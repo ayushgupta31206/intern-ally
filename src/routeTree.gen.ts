@@ -16,6 +16,7 @@ import { Route as AdminLoginRouteImport } from './routes/admin-login'
 import { Route as AuthenticatedMyRouteImport } from './routes/_authenticated/my'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminCompaniesRouteImport } from './routes/admin/companies'
+import { Route as AdminInternsRouteImport } from './routes/admin/interns'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -51,6 +52,11 @@ const AdminCompaniesRoute = AdminCompaniesRouteImport.update({
   path: '/companies',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminInternsRoute = AdminInternsRouteImport.update({
+  id: '/interns',
+  path: '/interns',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -58,6 +64,7 @@ export interface FileRoutesByFullPath {
   '/admin-login': typeof AdminLoginRoute
   '/my': typeof AuthenticatedMyRoute
   '/admin/companies': typeof AdminCompaniesRoute
+  '/admin/interns': typeof AdminInternsRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
@@ -65,6 +72,7 @@ export interface FileRoutesByTo {
   '/admin-login': typeof AdminLoginRoute
   '/my': typeof AuthenticatedMyRoute
   '/admin/companies': typeof AdminCompaniesRoute
+  '/admin/interns': typeof AdminInternsRoute
   '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
@@ -75,14 +83,27 @@ export interface FileRoutesById {
   '/admin-login': typeof AdminLoginRoute
   '/_authenticated/my': typeof AuthenticatedMyRoute
   '/admin/companies': typeof AdminCompaniesRoute
+  '/admin/interns': typeof AdminInternsRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/admin' | '/admin-login' | '/my' | '/admin/companies' | '/admin/'
+    | '/'
+    | '/admin'
+    | '/admin-login'
+    | '/my'
+    | '/admin/companies'
+    | '/admin/interns'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin-login' | '/my' | '/admin/companies' | '/admin'
+  to:
+    | '/'
+    | '/admin-login'
+    | '/my'
+    | '/admin/companies'
+    | '/admin/interns'
+    | '/admin'
   id:
     | '__root__'
     | '/'
@@ -91,6 +112,7 @@ export interface FileRouteTypes {
     | '/admin-login'
     | '/_authenticated/my'
     | '/admin/companies'
+    | '/admin/interns'
     | '/admin/'
   fileRoutesById: FileRoutesById
 }
@@ -152,6 +174,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCompaniesRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/interns': {
+      id: '/admin/interns'
+      path: '/interns'
+      fullPath: '/admin/interns'
+      preLoaderRoute: typeof AdminInternsRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
   }
 }
 
@@ -168,11 +197,13 @@ const AuthenticatedRouteRouteWithChildren =
 
 interface AdminRouteRouteChildren {
   AdminCompaniesRoute: typeof AdminCompaniesRoute
+  AdminInternsRoute: typeof AdminInternsRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminCompaniesRoute: AdminCompaniesRoute,
+  AdminInternsRoute: AdminInternsRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
