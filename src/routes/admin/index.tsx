@@ -96,7 +96,15 @@ function Dashboard() {
   );
 }
 
-function Stat({ label, value, accent }: { label: string; value?: number; accent?: boolean }) {
+function Stat({
+  label,
+  value,
+  accent,
+}: {
+  label: string;
+  value: number | undefined;
+  accent?: boolean;
+}) {
   return (
     <div className="stat-card">
       <p className="text-xs font-medium text-muted-foreground">{label}</p>
