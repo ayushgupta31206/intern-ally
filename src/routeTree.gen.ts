@@ -18,6 +18,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminAssignmentsRouteImport } from './routes/admin/assignments'
 import { Route as AdminCompaniesRouteImport } from './routes/admin/companies'
 import { Route as AdminInternsRouteImport } from './routes/admin/interns'
+import { Route as AdminOnboardedRouteImport } from './routes/admin/onboarded'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -63,6 +64,11 @@ const AdminInternsRoute = AdminInternsRouteImport.update({
   path: '/interns',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminOnboardedRoute = AdminOnboardedRouteImport.update({
+  id: '/onboarded',
+  path: '/onboarded',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -72,6 +78,7 @@ export interface FileRoutesByFullPath {
   '/admin/assignments': typeof AdminAssignmentsRoute
   '/admin/companies': typeof AdminCompaniesRoute
   '/admin/interns': typeof AdminInternsRoute
+  '/admin/onboarded': typeof AdminOnboardedRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
@@ -81,6 +88,7 @@ export interface FileRoutesByTo {
   '/admin/assignments': typeof AdminAssignmentsRoute
   '/admin/companies': typeof AdminCompaniesRoute
   '/admin/interns': typeof AdminInternsRoute
+  '/admin/onboarded': typeof AdminOnboardedRoute
   '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
@@ -93,6 +101,7 @@ export interface FileRoutesById {
   '/admin/assignments': typeof AdminAssignmentsRoute
   '/admin/companies': typeof AdminCompaniesRoute
   '/admin/interns': typeof AdminInternsRoute
+  '/admin/onboarded': typeof AdminOnboardedRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
@@ -105,6 +114,7 @@ export interface FileRouteTypes {
     | '/admin/assignments'
     | '/admin/companies'
     | '/admin/interns'
+    | '/admin/onboarded'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -114,6 +124,7 @@ export interface FileRouteTypes {
     | '/admin/assignments'
     | '/admin/companies'
     | '/admin/interns'
+    | '/admin/onboarded'
     | '/admin'
   id:
     | '__root__'
@@ -125,6 +136,7 @@ export interface FileRouteTypes {
     | '/admin/assignments'
     | '/admin/companies'
     | '/admin/interns'
+    | '/admin/onboarded'
     | '/admin/'
   fileRoutesById: FileRoutesById
 }
@@ -200,6 +212,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminInternsRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/onboarded': {
+      id: '/admin/onboarded'
+      path: '/onboarded'
+      fullPath: '/admin/onboarded'
+      preLoaderRoute: typeof AdminOnboardedRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
   }
 }
 
@@ -218,6 +237,7 @@ interface AdminRouteRouteChildren {
   AdminAssignmentsRoute: typeof AdminAssignmentsRoute
   AdminCompaniesRoute: typeof AdminCompaniesRoute
   AdminInternsRoute: typeof AdminInternsRoute
+  AdminOnboardedRoute: typeof AdminOnboardedRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
@@ -225,6 +245,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminAssignmentsRoute: AdminAssignmentsRoute,
   AdminCompaniesRoute: AdminCompaniesRoute,
   AdminInternsRoute: AdminInternsRoute,
+  AdminOnboardedRoute: AdminOnboardedRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
