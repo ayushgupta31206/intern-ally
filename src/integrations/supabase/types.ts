@@ -14,13 +14,112 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      companies: {
+        Row: {
+          assigned_to: string | null
+          created_at: string
+          date_assigned: string | null
+          id: string
+          name: string
+          ready_flag: boolean
+          ready_flagged_at: string | null
+          status: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          created_at?: string
+          date_assigned?: string | null
+          id?: string
+          name: string
+          ready_flag?: boolean
+          ready_flagged_at?: string | null
+          status?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          created_at?: string
+          date_assigned?: string | null
+          id?: string
+          name?: string
+          ready_flag?: boolean
+          ready_flagged_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "companies_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "interns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      interns: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      onboarded_companies: {
+        Row: {
+          created_at: string
+          date_onboarded: string
+          id: string
+          intern_id: string | null
+          name: string
+          notes: string | null
+          onboarded_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          date_onboarded?: string
+          id?: string
+          intern_id?: string | null
+          name: string
+          notes?: string | null
+          onboarded_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          date_onboarded?: string
+          id?: string
+          intern_id?: string | null
+          name?: string
+          notes?: string | null
+          onboarded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onboarded_companies_intern_id_fkey"
+            columns: ["intern_id"]
+            isOneToOne: false
+            referencedRelation: "interns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      current_intern_id: { Args: never; Returns: string }
     }
     Enums: {
       [_ in never]: never
