@@ -22,7 +22,9 @@ export const Route = createFileRoute("/admin-login")({
 
 function AdminLogin() {
   const navigate = useNavigate();
+  const router = useRouter();
   const login = useServerFn(adminLogin);
+  const checkStatus = useServerFn(adminStatus);
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -32,11 +34,20 @@ function AdminLogin() {
     setBusy(true);
     setError("");
     const result = await login({ data: { password } });
-    setBusy(false);
     if (!result.ok) {
+      setBusy(false);
       setError(result.message || "Incorrect password");
       return;
     }
+    // Confirm the session cookie actually came back before navigating,
+    // otherwise the admin loader would silently bounce us straight back here.
+    const { isAdmin } = await checkStatus();
+    setBusy(false);
+    if (!isAdmin) {
+      setError("Password accepted, but the session couldn't be saved. Allow cookies for this site, or open the preview in a new tab, then try again.");
+      return;
+    }
+    await router.invalidate();
     navigate({ to: "/admin", replace: true });
   }
 
