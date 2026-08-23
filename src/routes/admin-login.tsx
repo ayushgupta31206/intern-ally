@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useRouter, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { ShieldCheck } from "lucide-react";
@@ -6,7 +6,7 @@ import { ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { adminLogin } from "@/lib/admin.functions";
+import { adminLogin, adminStatus } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/admin-login")({
   head: () => ({
