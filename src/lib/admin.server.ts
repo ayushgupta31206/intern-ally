@@ -15,7 +15,9 @@ function sessionConfig() {
     password,
     name: "ict-admin",
     maxAge: 60 * 60 * 12,
-    cookie: { httpOnly: true, secure: true, sameSite: "lax" as const, path: "/" },
+    // SameSite=None + Secure so the session cookie survives the embedded
+    // preview iframe (a third-party context, where Lax cookies are dropped).
+    cookie: { httpOnly: true, secure: true, sameSite: "none" as const, path: "/" },
   };
 }
 
