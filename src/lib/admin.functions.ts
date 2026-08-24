@@ -102,6 +102,16 @@ export const addCompanies = createServerFn({ method: "POST" })
     return { added, skipped: names.length - added, parsed: names.length };
   });
 
+export const deleteCompany = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
+  .handler(async ({ data }) => {
+    const { requireAdmin, supabaseAdmin } = await import("./admin.server");
+    await requireAdmin();
+    const { error } = await supabaseAdmin.from("companies").delete().eq("id", data.id);
+    if (error) return { ok: false as const, message: error.message };
+    return { ok: true as const };
+  });
+
 export const getPool = createServerFn({ method: "GET" }).handler(async () => {
   const { requireAdmin, supabaseAdmin } = await import("./admin.server");
   await requireAdmin();
