@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CheckCircle2, Flag, LogOut } from "lucide-react";
+import { CheckCircle2, LogOut, Star } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -25,7 +25,8 @@ type Company = {
   id: string;
   name: string;
   date_assigned: string | null;
-  ready_flag: boolean;
+  interested: boolean;
+  onboarded_request: boolean;
 };
 
 function todayISO() {
@@ -50,7 +51,7 @@ function MyCompanies() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("companies")
-        .select("id, name, date_assigned, ready_flag")
+        .select("id, name, date_assigned, interested, onboarded_request")
         .eq("status", "assigned")
         .order("date_assigned", { ascending: false })
         .order("name", { ascending: true });
@@ -59,19 +60,32 @@ function MyCompanies() {
     },
   });
 
-  const flag = useMutation({
-    mutationFn: async ({ id, value }: { id: string; value: boolean }) => {
+  const toggle = useMutation({
+    mutationFn: async ({
+      id,
+      field,
+      value,
+    }: {
+      id: string;
+      field: "interested" | "onboarded_request";
+      value: boolean;
+    }) => {
+      const stamp = field === "interested" ? "interested_at" : "onboarded_requested_at";
       const { error } = await supabase
         .from("companies")
-        .update({ ready_flag: value, ready_flagged_at: value ? new Date().toISOString() : null })
+        .update({ [field]: value, [stamp]: value ? new Date().toISOString() : null })
         .eq("id", id);
       if (error) throw error;
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["my-companies"] });
-      toast.success(
-        variables.value ? "Flagged for your admin to confirm" : "Flag removed",
-      );
+      if (variables.field === "interested") {
+        toast.success(variables.value ? "Marked interested" : "Interest removed");
+      } else {
+        toast.success(
+          variables.value ? "Sent to your admin to confirm onboarding" : "Onboarded request removed",
+        );
+      }
     },
     onError: () => toast.error("Couldn't update that company"),
   });
@@ -161,30 +175,40 @@ function MyCompanies() {
               </div>
               <ul className="divide-y overflow-hidden rounded-xl border bg-card">
                 {groups.get(date)!.map((company) => (
-                  <li key={company.id} className="flex items-center gap-3 p-3">
-                    <span className="min-w-0 flex-1 truncate text-sm font-medium">
-                      {company.name}
-                    </span>
-                    {company.ready_flag ? (
+                  <li key={company.id} className="flex flex-col gap-2 p-3">
+                    <span className="text-sm font-medium">{company.name}</span>
+                    <div className="flex flex-wrap gap-2">
                       <Button
-                        variant="ghost"
+                        variant={company.interested ? "default" : "outline"}
                         size="sm"
-                        className="text-success"
-                        onClick={() => flag.mutate({ id: company.id, value: false })}
+                        disabled={toggle.isPending}
+                        onClick={() =>
+                          toggle.mutate({
+                            id: company.id,
+                            field: "interested",
+                            value: !company.interested,
+                          })
+                        }
+                      >
+                        <Star className="mr-1.5 h-4 w-4" />
+                        Interested
+                      </Button>
+                      <Button
+                        variant={company.onboarded_request ? "default" : "outline"}
+                        size="sm"
+                        disabled={toggle.isPending}
+                        onClick={() =>
+                          toggle.mutate({
+                            id: company.id,
+                            field: "onboarded_request",
+                            value: !company.onboarded_request,
+                          })
+                        }
                       >
                         <CheckCircle2 className="mr-1.5 h-4 w-4" />
-                        Flagged
+                        Onboarded
                       </Button>
-                    ) : (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => flag.mutate({ id: company.id, value: true })}
-                      >
-                        <Flag className="mr-1.5 h-4 w-4" />
-                        Ready
-                      </Button>
-                    )}
+                    </div>
                   </li>
                 ))}
               </ul>
