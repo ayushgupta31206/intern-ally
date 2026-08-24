@@ -70,11 +70,13 @@ function MyCompanies() {
       field: "interested" | "onboarded_request";
       value: boolean;
     }) => {
-      const stamp = field === "interested" ? "interested_at" : "onboarded_requested_at";
-      const { error } = await supabase
-        .from("companies")
-        .update({ [field]: value, [stamp]: value ? new Date().toISOString() : null })
-        .eq("id", id);
+      const at = value ? new Date().toISOString() : null;
+      const patch =
+        field === "interested"
+          ? { interested: value, interested_at: at }
+          : { onboarded_request: value, onboarded_requested_at: at };
+      const { error } = await supabase.from("companies").update(patch).eq("id", id);
+
       if (error) throw error;
     },
     onSuccess: (_data, variables) => {
