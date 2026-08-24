@@ -20,9 +20,11 @@ export type Database = {
           created_at: string
           date_assigned: string | null
           id: string
+          interested: boolean
+          interested_at: string | null
           name: string
-          ready_flag: boolean
-          ready_flagged_at: string | null
+          onboarded_request: boolean
+          onboarded_requested_at: string | null
           status: string
         }
         Insert: {
@@ -30,9 +32,11 @@ export type Database = {
           created_at?: string
           date_assigned?: string | null
           id?: string
+          interested?: boolean
+          interested_at?: string | null
           name: string
-          ready_flag?: boolean
-          ready_flagged_at?: string | null
+          onboarded_request?: boolean
+          onboarded_requested_at?: string | null
           status?: string
         }
         Update: {
@@ -40,9 +44,11 @@ export type Database = {
           created_at?: string
           date_assigned?: string | null
           id?: string
+          interested?: boolean
+          interested_at?: string | null
           name?: string
-          ready_flag?: boolean
-          ready_flagged_at?: string | null
+          onboarded_request?: boolean
+          onboarded_requested_at?: string | null
           status?: string
         }
         Relationships: [

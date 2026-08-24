@@ -107,7 +107,7 @@ export const getPool = createServerFn({ method: "GET" }).handler(async () => {
   await requireAdmin();
   const { data } = await supabaseAdmin
     .from("companies")
-    .select("id, name, status, date_assigned, ready_flag, interns(name)")
+    .select("id, name, status, date_assigned, interested, onboarded_request, interns(name)")
     .order("created_at", { ascending: false })
     .limit(500);
   return (data ?? []).map((row) => ({
@@ -115,7 +115,8 @@ export const getPool = createServerFn({ method: "GET" }).handler(async () => {
     name: row.name,
     status: row.status,
     dateAssigned: row.date_assigned,
-    readyFlag: row.ready_flag,
+    interested: row.interested,
+    onboardedRequest: row.onboarded_request,
     internName: (row.interns as { name: string } | null)?.name ?? null,
   }));
 });
@@ -223,7 +224,7 @@ export const getAssignments = createServerFn({ method: "GET" }).handler(async ()
   await requireAdmin();
   const { data } = await supabaseAdmin
     .from("companies")
-    .select("id, name, date_assigned, ready_flag, assigned_to, interns(name)")
+    .select("id, name, date_assigned, interested, onboarded_request, assigned_to, interns(name)")
     .eq("status", "assigned")
     .order("date_assigned", { ascending: false })
     .order("name", { ascending: true })
@@ -232,7 +233,8 @@ export const getAssignments = createServerFn({ method: "GET" }).handler(async ()
     id: row.id,
     name: row.name,
     dateAssigned: row.date_assigned,
-    readyFlag: row.ready_flag,
+    interested: row.interested,
+    onboardedRequest: row.onboarded_request,
     internId: row.assigned_to,
     internName: (row.interns as { name: string } | null)?.name ?? "—",
   }));

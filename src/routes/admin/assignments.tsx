@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { CheckCircle2, Flag } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -51,7 +51,7 @@ function Assignments() {
 
   const term = search.toLowerCase();
   const rows = (assignments.data ?? []).filter((row) => {
-    if (readyOnly && !row.readyFlag) return false;
+    if (readyOnly && !row.onboardedRequest) return false;
     if (!term) return true;
     return (
       row.name.toLowerCase().includes(term) ||
@@ -66,14 +66,14 @@ function Assignments() {
     groups.set(key, [...(groups.get(key) ?? []), row]);
   }
   const dates = [...groups.keys()].sort((a, b) => (a < b ? 1 : -1));
-  const flaggedCount = (assignments.data ?? []).filter((row) => row.readyFlag).length;
+  const requestedCount = (assignments.data ?? []).filter((row) => row.onboardedRequest).length;
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Assignments</h1>
         <p className="text-sm text-muted-foreground">
-          {rows.length} open · {flaggedCount} flagged ready by interns
+          {rows.length} open · {requestedCount} marked onboarded by interns
         </p>
       </div>
 
@@ -89,8 +89,8 @@ function Assignments() {
           size="sm"
           onClick={() => setReadyOnly((value) => !value)}
         >
-          <Flag className="mr-1.5 h-4 w-4" />
-          Flagged only
+          <CheckCircle2 className="mr-1.5 h-4 w-4" />
+          Onboarded-marked only
         </Button>
       </div>
 
@@ -108,9 +108,14 @@ function Assignments() {
                   <li key={row.id} className="flex flex-wrap items-center gap-3 p-3">
                     <span className="min-w-0 flex-1 truncate text-sm font-medium">{row.name}</span>
                     <span className="text-xs text-muted-foreground">{row.internName}</span>
-                    {row.readyFlag && (
+                    {row.interested && (
+                      <span className="rounded-full bg-secondary px-2 py-0.5 text-[11px] font-semibold text-secondary-foreground">
+                        interested
+                      </span>
+                    )}
+                    {row.onboardedRequest && (
                       <span className="rounded-full bg-accent px-2 py-0.5 text-[11px] font-semibold text-accent-foreground">
-                        ready
+                        onboarded?
                       </span>
                     )}
                     <Button
