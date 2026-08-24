@@ -2,14 +2,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { Upload } from "lucide-react";
+import { Trash2, Upload } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { addCompanies, getPool } from "@/lib/admin.functions";
+import { addCompanies, deleteCompany, getPool } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/admin/companies")({
   head: () => ({
@@ -27,6 +27,7 @@ function CompanyPool() {
   const queryClient = useQueryClient();
   const fetchPool = useServerFn(getPool);
   const add = useServerFn(addCompanies);
+  const remove = useServerFn(deleteCompany);
   const [raw, setRaw] = useState("");
   const [filter, setFilter] = useState("");
 
@@ -42,6 +43,15 @@ function CompanyPool() {
       queryClient.invalidateQueries();
     },
     onError: () => toast.error("Upload failed"),
+  });
+
+  const del = useMutation({
+    mutationFn: (id: string) => remove({ data: { id } }),
+    onSuccess: () => {
+      toast.success("Company removed from the pool");
+      queryClient.invalidateQueries({ queryKey: ["pool"] });
+    },
+    onError: () => toast.error("Could not delete company"),
   });
 
   async function onFile(event: React.ChangeEvent<HTMLInputElement>) {
@@ -106,7 +116,7 @@ function CompanyPool() {
             <li key={row.id} className="flex items-center gap-3 p-3 text-sm">
               <span className="min-w-0 flex-1 truncate font-medium">{row.name}</span>
               {row.status === "assigned" ? (
-                <span className="text-xs text-muted-foreground">
+                <span className="hidden text-xs text-muted-foreground sm:inline">
                   {row.internName} · {row.dateAssigned}
                 </span>
               ) : (
@@ -114,6 +124,17 @@ function CompanyPool() {
                   unassigned
                 </span>
               )}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive"
+                aria-label={`Delete ${row.name}`}
+                title="Delete company"
+                disabled={del.isPending}
+                onClick={() => del.mutate(row.id)}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
             </li>
           ))}
         </ul>
