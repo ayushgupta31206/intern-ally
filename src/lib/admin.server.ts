@@ -1,47 +1,6 @@
-import { createHash, timingSafeEqual } from "node:crypto";
-
-import { useSession } from "@tanstack/react-start/server";
-
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 export { supabaseAdmin };
-
-type AdminSession = { isAdmin?: boolean };
-
-function sessionConfig() {
-  const password = process.env["ADMIN_SESSION_SECRET"];
-  if (!password) throw new Error("ADMIN_SESSION_SECRET is not set");
-  return {
-    password,
-    name: "ict-admin",
-    maxAge: 60 * 60 * 12,
-    // SameSite=None + Secure so the session cookie survives the embedded
-    // preview iframe (a third-party context, where Lax cookies are dropped).
-    cookie: { httpOnly: true, secure: true, sameSite: "none" as const, path: "/" },
-  };
-}
-
-export async function getAdminSession() {
-  return useSession<AdminSession>(sessionConfig());
-}
-
-export async function isAdminRequest(): Promise<boolean> {
-  const session = await getAdminSession();
-  return session.data.isAdmin === true;
-}
-
-export async function requireAdmin(): Promise<void> {
-  if (!(await isAdminRequest())) throw new Error("Not signed in as admin");
-}
-
-/** Timing-safe comparison against the ADMIN_PASSWORD secret. */
-export function adminPasswordMatches(input: string): boolean {
-  const expected = process.env["ADMIN_PASSWORD"];
-  if (!expected) throw new Error("ADMIN_PASSWORD is not configured yet");
-  const a = createHash("sha256").update(input, "utf8").digest();
-  const b = createHash("sha256").update(expected, "utf8").digest();
-  return timingSafeEqual(a, b);
-}
 
 export function today(): string {
   return new Date().toISOString().slice(0, 10);
