@@ -7,11 +7,8 @@ export const adminStatus = createServerFn({ method: "GET" }).handler(async () =>
 });
 
 export const adminLogin = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => z.object({ password: z.string().max(200) }).parse(data))
+  .inputValidator((data: unknown) => z.object({ password: z.string().min(1).max(200) }).parse(data))
   .handler(async ({ data }) => {
-    if (data.password.trim().length === 0) {
-      return { ok: false as const, message: "Enter your admin password" };
-    }
     const { adminPasswordMatches, getAdminSession } = await import("./admin.server");
     let ok = false;
     try {

@@ -31,32 +31,24 @@ function AdminLogin() {
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (password.trim().length === 0) {
-      setError("Enter your admin password");
-      return;
-    }
     setBusy(true);
     setError("");
-    try {
-      const result = await login({ data: { password } });
-      if (!result.ok) {
-        setError(result.message || "Incorrect password");
-        return;
-      }
-      // Confirm the session cookie actually came back before navigating,
-      // otherwise the admin loader would silently bounce us straight back here.
-      const { isAdmin } = await checkStatus();
-      if (!isAdmin) {
-        setError("Password accepted, but the session couldn't be saved. Allow cookies for this site, or open the preview in a new tab, then try again.");
-        return;
-      }
-      await router.invalidate();
-      navigate({ to: "/admin", replace: true });
-    } catch {
-      setError("Unable to sign in right now. Please try again.");
-    } finally {
+    const result = await login({ data: { password } });
+    if (!result.ok) {
       setBusy(false);
+      setError(result.message || "Incorrect password");
+      return;
     }
+    // Confirm the session cookie actually came back before navigating,
+    // otherwise the admin loader would silently bounce us straight back here.
+    const { isAdmin } = await checkStatus();
+    setBusy(false);
+    if (!isAdmin) {
+      setError("Password accepted, but the session couldn't be saved. Allow cookies for this site, or open the preview in a new tab, then try again.");
+      return;
+    }
+    await router.invalidate();
+    navigate({ to: "/admin", replace: true });
   }
 
   return (
