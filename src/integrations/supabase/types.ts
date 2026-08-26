@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.15"
+    PostgrestVersion: "14.17"
   }
   public: {
     Tables: {
@@ -20,11 +20,10 @@ export type Database = {
           created_at: string
           date_assigned: string | null
           id: string
-          interested: boolean
-          interested_at: string | null
           name: string
-          onboarded_request: boolean
-          onboarded_requested_at: string | null
+          outcome: string | null
+          outcome_at: string | null
+          owner_id: string | null
           status: string
         }
         Insert: {
@@ -32,11 +31,10 @@ export type Database = {
           created_at?: string
           date_assigned?: string | null
           id?: string
-          interested?: boolean
-          interested_at?: string | null
           name: string
-          onboarded_request?: boolean
-          onboarded_requested_at?: string | null
+          outcome?: string | null
+          outcome_at?: string | null
+          owner_id?: string | null
           status?: string
         }
         Update: {
@@ -44,11 +42,10 @@ export type Database = {
           created_at?: string
           date_assigned?: string | null
           id?: string
-          interested?: boolean
-          interested_at?: string | null
           name?: string
-          onboarded_request?: boolean
-          onboarded_requested_at?: string | null
+          outcome?: string | null
+          outcome_at?: string | null
+          owner_id?: string | null
           status?: string
         }
         Relationships: [
@@ -67,18 +64,21 @@ export type Database = {
           email: string
           id: string
           name: string
+          owner_id: string | null
         }
         Insert: {
           created_at?: string
           email: string
           id?: string
           name: string
+          owner_id?: string | null
         }
         Update: {
           created_at?: string
           email?: string
           id?: string
           name?: string
+          owner_id?: string | null
         }
         Relationships: []
       }
@@ -91,6 +91,7 @@ export type Database = {
           name: string
           notes: string | null
           onboarded_by: string | null
+          owner_id: string | null
         }
         Insert: {
           created_at?: string
@@ -100,6 +101,7 @@ export type Database = {
           name: string
           notes?: string | null
           onboarded_by?: string | null
+          owner_id?: string | null
         }
         Update: {
           created_at?: string
@@ -109,6 +111,7 @@ export type Database = {
           name?: string
           notes?: string | null
           onboarded_by?: string | null
+          owner_id?: string | null
         }
         Relationships: [
           {
@@ -125,7 +128,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      current_intern_id: { Args: never; Returns: string }
+      current_intern_ids: { Args: never; Returns: string[] }
     }
     Enums: {
       [_ in never]: never
