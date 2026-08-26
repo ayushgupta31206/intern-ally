@@ -23,7 +23,7 @@ export type Database = {
           name: string
           outcome: string | null
           outcome_at: string | null
-          owner_id: string | null
+          owner_id: string
           status: string
         }
         Insert: {
@@ -34,7 +34,7 @@ export type Database = {
           name: string
           outcome?: string | null
           outcome_at?: string | null
-          owner_id?: string | null
+          owner_id?: string
           status?: string
         }
         Update: {
@@ -45,7 +45,7 @@ export type Database = {
           name?: string
           outcome?: string | null
           outcome_at?: string | null
-          owner_id?: string | null
+          owner_id?: string
           status?: string
         }
         Relationships: [
@@ -64,21 +64,21 @@ export type Database = {
           email: string
           id: string
           name: string
-          owner_id: string | null
+          owner_id: string
         }
         Insert: {
           created_at?: string
           email: string
           id?: string
           name: string
-          owner_id?: string | null
+          owner_id?: string
         }
         Update: {
           created_at?: string
           email?: string
           id?: string
           name?: string
-          owner_id?: string | null
+          owner_id?: string
         }
         Relationships: []
       }
@@ -91,7 +91,7 @@ export type Database = {
           name: string
           notes: string | null
           onboarded_by: string | null
-          owner_id: string | null
+          owner_id: string
         }
         Insert: {
           created_at?: string
@@ -101,7 +101,7 @@ export type Database = {
           name: string
           notes?: string | null
           onboarded_by?: string | null
-          owner_id?: string | null
+          owner_id?: string
         }
         Update: {
           created_at?: string
@@ -111,7 +111,7 @@ export type Database = {
           name?: string
           notes?: string | null
           onboarded_by?: string | null
-          owner_id?: string | null
+          owner_id?: string
         }
         Relationships: [
           {
