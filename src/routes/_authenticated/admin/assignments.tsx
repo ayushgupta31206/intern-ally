@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getAssignments, markOnboarded } from "@/lib/admin.functions";
 
-export const Route = createFileRoute("/admin/assignments")({
+export const Route = createFileRoute("/_authenticated/admin/assignments")({
   head: () => ({
     meta: [
       { title: "Assignments — Intern Company Tracker" },

@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { getOnboarded } from "@/lib/admin.functions";
 
-export const Route = createFileRoute("/admin/onboarded")({
+export const Route = createFileRoute("/_authenticated/admin/onboarded")({
   head: () => ({
     meta: [
       { title: "Onboarded companies — Intern Company Tracker" },

@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { addCompanies, deleteCompany, getPool } from "@/lib/admin.functions";
 
-export const Route = createFileRoute("/admin/companies")({
+export const Route = createFileRoute("/_authenticated/admin/companies")({
   head: () => ({
     meta: [
       { title: "Company pool — Intern Company Tracker" },

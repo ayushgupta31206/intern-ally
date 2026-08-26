@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { addIntern, getInterns, removeIntern } from "@/lib/admin.functions";
 
-export const Route = createFileRoute("/admin/interns")({
+export const Route = createFileRoute("/_authenticated/admin/interns")({
   head: () => ({
     meta: [
       { title: "Interns — Intern Company Tracker" },
