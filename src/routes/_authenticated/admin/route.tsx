@@ -5,7 +5,7 @@ import { ClipboardList, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { adminLogout, adminStatus } from "@/lib/admin.functions";
 
-export const Route = createFileRoute("/admin")({
+export const Route = createFileRoute("/_authenticated/admin")({
   loader: async () => {
     const { isAdmin } = await adminStatus();
     if (!isAdmin) throw redirect({ to: "/admin-login" });
