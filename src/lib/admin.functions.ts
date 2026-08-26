@@ -295,7 +295,12 @@ export const getOnboarded = createServerFn({ method: "GET" })
 export const getMyIntern = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { data } = await context.supabase.from("interns").select("id, name, email").limit(5);
-    const mine = (data ?? []).filter((row) => row.owner_id !== context.userId);
-    return mine[0] ?? (data ?? [])[0] ?? null;
+    const email = (context.claims as { email?: string }).email?.toLowerCase();
+    if (!email) return null;
+    const { data } = await context.supabase
+      .from("interns")
+      .select("id, name, email")
+      .eq("email", email)
+      .limit(1);
+    return data?.[0] ?? null;
   });
