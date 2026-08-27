@@ -1,21 +1,11 @@
-import { createFileRoute, Link, Outlet, redirect, useNavigate } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
+import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { ClipboardList, LogOut } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { adminLogout, adminStatus } from "@/lib/admin.functions";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/admin")({
-  loader: async () => {
-    const { isAdmin } = await adminStatus();
-    if (!isAdmin) throw redirect({ to: "/admin-login" });
-    return null;
-  },
-  errorComponent: () => (
-    <div className="flex min-h-screen items-center justify-center px-5 text-center text-sm text-muted-foreground">
-      Couldn't load the admin area. Try refreshing.
-    </div>
-  ),
   component: AdminLayout,
 });
 
@@ -29,7 +19,14 @@ const NAV = [
 
 function AdminLayout() {
   const navigate = useNavigate();
-  const logout = useServerFn(adminLogout);
+  const queryClient = useQueryClient();
+
+  async function signOut() {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await supabase.auth.signOut();
+    navigate({ to: "/", replace: true });
+  }
 
   return (
     <div className="min-h-screen">
@@ -39,16 +36,9 @@ function AdminLayout() {
             <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <ClipboardList className="h-4 w-4" />
             </span>
-            <span className="font-display text-sm font-bold">Admin</span>
+            <span className="font-display text-sm font-bold">My dashboard</span>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={async () => {
-              await logout();
-              navigate({ to: "/admin-login", replace: true });
-            }}
-          >
+          <Button variant="ghost" size="sm" onClick={signOut}>
             <LogOut className="mr-1.5 h-4 w-4" />
             Sign out
           </Button>

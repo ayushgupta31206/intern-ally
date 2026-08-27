@@ -1,6 +1,6 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ClipboardList, ShieldCheck } from "lucide-react";
+import { ClipboardList } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -69,18 +69,8 @@ function Landing() {
             {loading ? "Opening Google…" : "Continue with Google"}
           </Button>
           <p className="mt-3 text-center text-xs text-muted-foreground">
-            Access is limited to pre-approved intern emails.
+            Interns land on their own list. Everyone else gets their own manager dashboard.
           </p>
-        </div>
-
-        <div className="mt-8 text-center">
-          <Link
-            to="/admin-login"
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
-          >
-            <ShieldCheck className="h-3.5 w-3.5" />
-            Admin sign in
-          </Link>
         </div>
       </div>
     </main>
