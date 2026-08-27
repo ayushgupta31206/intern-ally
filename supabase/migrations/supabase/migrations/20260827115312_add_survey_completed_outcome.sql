@@ -2,3 +2,4 @@
 ALTER TABLE public.companies DROP CONSTRAINT IF EXISTS companies_outcome_check;
 ALTER TABLE public.companies ADD CONSTRAINT companies_outcome_check
   CHECK (outcome IS NULL OR outcome IN ('interested','not_interested','didnt_pick','onboard_request','survey_completed'));
+CREATE TABLE public.survey_completed_companies ( id uuid NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY, name text NOT NULL, completed_by text, intern_id uuid REFERENCES public.interns(id) ON DELETE SET NULL, date_completed date NOT NULL DEFAULT current_date, notes text, owner_id uuid NOT NULL DEFAULT auth.uid(), created_at timestamptz NOT NULL DEFAULT now() ); CREATE INDEX survey_completed_date_idx ON public.survey_completed_companies (date_completed); CREATE INDEX survey_completed_owner_idx ON public.survey_completed_companies (owner_id); GRANT ALL ON public.survey_completed_companies TO service_role; ALTER TABLE public.survey_completed_companies ENABLE ROW LEVEL SECURITY;
