@@ -23,7 +23,7 @@ export const Route = createFileRoute("/_authenticated/my")({
   component: MyCompanies,
 });
 
-type Outcome = "interested" | "not_interested" | "didnt_pick" | "onboard_request";
+type Outcome = "interested" | "not_interested" | "didnt_pick" | "onboard_request" | "survey_completed";
 
 type Company = {
   id: string;
@@ -37,6 +37,7 @@ const OUTCOMES: { value: Outcome; label: string; toast: string }[] = [
   { value: "not_interested", label: "Not interested", toast: "Marked not interested" },
   { value: "didnt_pick", label: "Didn't pick", toast: "Marked didn't pick — it stays on your list" },
   { value: "onboard_request", label: "Onboarded", toast: "Sent to your manager to confirm" },
+  { value: "survey_completed", label: "Survey Completed", toast: "Marked survey completed" },
 ];
 
 function todayISO() {
