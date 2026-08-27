@@ -24,6 +24,13 @@ export const Route = createFileRoute("/_authenticated/admin/assignments")({
   component: Assignments,
 });
 
+const OUTCOME_LABELS: Record<string, string> = {
+  interested: "interested",
+  not_interested: "not interested",
+  didnt_pick: "didn't pick",
+  onboard_request: "onboarded?",
+};
+
 function Assignments() {
   const queryClient = useQueryClient();
   const fetchAssignments = useServerFn(getAssignments);
@@ -51,7 +58,7 @@ function Assignments() {
 
   const term = search.toLowerCase();
   const rows = (assignments.data ?? []).filter((row) => {
-    if (readyOnly && !row.onboardedRequest) return false;
+    if (readyOnly && row.outcome !== "onboard_request") return false;
     if (!term) return true;
     return (
       row.name.toLowerCase().includes(term) ||
@@ -66,7 +73,7 @@ function Assignments() {
     groups.set(key, [...(groups.get(key) ?? []), row]);
   }
   const dates = [...groups.keys()].sort((a, b) => (a < b ? 1 : -1));
-  const requestedCount = (assignments.data ?? []).filter((row) => row.onboardedRequest).length;
+  const requestedCount = (assignments.data ?? []).filter((row) => row.outcome === "onboard_request").length;
 
   return (
     <div className="space-y-6">
@@ -108,14 +115,9 @@ function Assignments() {
                   <li key={row.id} className="flex flex-wrap items-center gap-3 p-3">
                     <span className="min-w-0 flex-1 truncate text-sm font-medium">{row.name}</span>
                     <span className="text-xs text-muted-foreground">{row.internName}</span>
-                    {row.interested && (
+                    {row.outcome && (
                       <span className="rounded-full bg-secondary px-2 py-0.5 text-[11px] font-semibold text-secondary-foreground">
-                        interested
-                      </span>
-                    )}
-                    {row.onboardedRequest && (
-                      <span className="rounded-full bg-accent px-2 py-0.5 text-[11px] font-semibold text-accent-foreground">
-                        onboarded?
+                        {OUTCOME_LABELS[row.outcome] ?? row.outcome}
                       </span>
                     )}
                     <Button
