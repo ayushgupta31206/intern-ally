@@ -133,10 +133,15 @@ function MyCompanies() {
             {companies.length} open {companies.length === 1 ? "company" : "companies"}
           </p>
         </div>
-        <Button variant="ghost" size="sm" onClick={signOut}>
-          <LogOut className="mr-1.5 h-4 w-4" />
-          Sign out
-        </Button>
+        <div className="flex flex-col items-end gap-1">
+          <Button variant="ghost" size="sm" onClick={signOut}>
+            <LogOut className="mr-1.5 h-4 w-4" />
+            Sign out
+          </Button>
+          <Button variant="link" size="sm" onClick={() => navigate({ to: "/admin" })}>
+            Manager dashboard
+          </Button>
+        </div>
       </header>
 
       {companiesQuery.isLoading ? (
