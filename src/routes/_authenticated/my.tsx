@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { LogOut } from "lucide-react";
+import { LogOut, Mail } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -60,7 +60,7 @@ function MyCompanies() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("companies")
-        .select("id, name, date_assigned, outcome")
+        .select("id, name, date_assigned, outcome, contact_name, contact_designation, contact_email")
         .eq("status", "assigned")
         .order("date_assigned", { ascending: false })
         .order("name", { ascending: true });
@@ -176,7 +176,29 @@ function MyCompanies() {
               <ul className="divide-y overflow-hidden rounded-xl border bg-card">
                 {groups.get(date)!.map((company) => (
                   <li key={company.id} className="flex flex-col gap-2 p-3">
-                    <span className="text-sm font-medium">{company.name}</span>
+                    <div>
+                      <span className="text-sm font-medium">{company.name}</span>
+                      {(company.contact_name || company.contact_designation || company.contact_email) && (
+                        <div className="mt-1 space-y-0.5 text-xs text-muted-foreground">
+                          {(company.contact_name || company.contact_designation) && (
+                            <p>
+                              {company.contact_name}
+                              {company.contact_name && company.contact_designation ? " · " : ""}
+                              {company.contact_designation}
+                            </p>
+                          )}
+                          {company.contact_email && (
+                            
+                              href={`mailto:${company.contact_email}`}
+                              className="inline-flex items-center gap-1 text-primary underline underline-offset-2"
+                            >
+                              <Mail className="h-3 w-3" />
+                              {company.contact_email}
+                            </a>
+                          )}
+                        </div>
+                      )}
+                    </div>
                     <div className="flex flex-wrap gap-2">
                       {OUTCOMES.map((option) => {
                         const active = company.outcome === option.value;
