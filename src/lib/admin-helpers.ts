@@ -13,18 +13,49 @@ export function shuffle<T>(items: T[]): T[] {
   return copy;
 }
 
-export function parseCompanyNames(raw: string): string[] {
-  const seen = new Set<string>();
-  const out: string[] = [];
-  for (const line of raw.split(/\r?\n/)) {
-    // Tolerate simple CSV: take the first column.
-    const first = line.split(",")[0] ?? "";
-    const name = first.replace(/^["']|["']$/g, "").trim();
-    if (!name) continue;
-    const key = name.toLowerCase();
-    if (seen.has(key)) continue;
-    seen.add(key);
-    out.push(name);
+export type ParsedCompanyRow = {
+  name: string;
+  contactName: string | null;
+  contactDesignation: string | null;
+  contactEmail: string | null;
+};
+
+/** Splits one CSV line into fields, respecting double-quoted fields that may contain commas. */
+function splitCsvLine(line: string): string[] {
+  const fields: string[] = [];
+  let current = "";
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    if (inQuotes) {
+      if (char === '"' && line[i + 1] === '"') {
+        current += '"';
+        i++;
+      } else if (char === '"') {
+        inQuotes = false;
+      } else {
+        current += char;
+      }
+    } else if (char === '"') {
+      inQuotes = true;
+    } else if (char === ",") {
+      fields.push(current);
+      current = "";
+    } else {
+      current += char;
+    }
   }
-  return out;
+  fields.push(current);
+  return fields;
 }
+
+const HEADER_HINTS = ["company", "organisation", "organization"];
+
+export function parseCompanyRows(raw: string): ParsedCompanyRow[] {
+  const seen = new Set<string>();
+  const out: ParsedCompanyRow[] = [];
+  const lines = raw.replace(/^\uFEFF/, "").split(/\r?\n/);
+
+  for (const [index, line] of lines.entries()) {
+    if (!line.trim()) continue;
+    const fields =
