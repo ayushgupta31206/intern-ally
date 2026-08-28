@@ -30,6 +30,9 @@ type Company = {
   name: string;
   date_assigned: string | null;
   outcome: string | null;
+  contact_name: string | null;
+  contact_designation: string | null;
+  contact_email: string | null;
 };
 
 const OUTCOMES: { value: Outcome; label: string; toast: string }[] = [
