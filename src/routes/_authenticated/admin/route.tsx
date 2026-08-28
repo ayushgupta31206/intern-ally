@@ -15,6 +15,7 @@ const NAV = [
   { to: "/admin/assignments", label: "Assignments" },
   { to: "/admin/interns", label: "Interns" },
   { to: "/admin/onboarded", label: "Onboarded" },
+  { to: "/admin/survey-completed", label: "Survey Completed" },
 ] as const;
 
 function AdminLayout() {
