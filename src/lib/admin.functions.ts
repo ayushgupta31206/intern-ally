@@ -104,6 +104,21 @@ export const deleteCompany = createServerFn({ method: "POST" })
     return { ok: true as const };
   });
 
+export const deleteCompanies = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) =>
+    z.object({ ids: z.array(z.string().uuid()).min(1).max(2000) }).parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
+      .from("companies")
+      .delete()
+      .in("id", data.ids)
+      .eq("owner_id", context.userId);
+    if (error) return { ok: false as const, deleted: 0, message: error.message };
+    return { ok: true as const, deleted: data.ids.length, message: "" };
+  });
+
 export const getPool = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
