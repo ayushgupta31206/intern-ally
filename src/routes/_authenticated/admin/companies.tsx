@@ -288,7 +288,7 @@ function CompanyPool() {
                       <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                         Email
                       </p>
-                      
+                      <a
                         href={`mailto:${viewing.contactEmail}`}
                         className="text-primary underline underline-offset-2"
                       >
