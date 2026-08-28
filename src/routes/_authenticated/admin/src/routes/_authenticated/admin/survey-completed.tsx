@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { getSurveyCompleted } from "@/lib/admin.functions";
 
-export const Route = createFileRoute("/_authenticated/admin/survey-completed")({
+export const Route = createFileRoute("/_authenticated/admin/src/routes/_authenticated/admin/survey-completed")({
   head: () => ({
     meta: [
       { title: "Survey completed — Intern Company Tracker" },

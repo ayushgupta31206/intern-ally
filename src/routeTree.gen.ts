@@ -18,6 +18,7 @@ import { Route as AuthenticatedAdminAssignmentsRouteImport } from './routes/_aut
 import { Route as AuthenticatedAdminCompaniesRouteImport } from './routes/_authenticated/admin/companies'
 import { Route as AuthenticatedAdminInternsRouteImport } from './routes/_authenticated/admin/interns'
 import { Route as AuthenticatedAdminOnboardedRouteImport } from './routes/_authenticated/admin/onboarded'
+import { Route as AuthenticatedAdminSrcRoutesAuthenticatedAdminSurveyCompletedRouteImport } from './routes/_authenticated/admin/src/routes/_authenticated/admin/survey-completed'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -67,6 +68,14 @@ const AuthenticatedAdminOnboardedRoute =
     path: '/onboarded',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminSrcRoutesAuthenticatedAdminSurveyCompletedRoute =
+  AuthenticatedAdminSrcRoutesAuthenticatedAdminSurveyCompletedRouteImport.update(
+    {
+      id: '/src/routes/_authenticated/admin/survey-completed',
+      path: '/src/routes/admin/survey-completed',
+      getParentRoute: () => AuthenticatedAdminRouteRoute,
+    } as any,
+  )
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -77,6 +86,7 @@ export interface FileRoutesByFullPath {
   '/admin/interns': typeof AuthenticatedAdminInternsRoute
   '/admin/onboarded': typeof AuthenticatedAdminOnboardedRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/admin/src/routes/admin/survey-completed': typeof AuthenticatedAdminSrcRoutesAuthenticatedAdminSurveyCompletedRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -86,6 +96,7 @@ export interface FileRoutesByTo {
   '/admin/interns': typeof AuthenticatedAdminInternsRoute
   '/admin/onboarded': typeof AuthenticatedAdminOnboardedRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/admin/src/routes/admin/survey-completed': typeof AuthenticatedAdminSrcRoutesAuthenticatedAdminSurveyCompletedRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -98,6 +109,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/interns': typeof AuthenticatedAdminInternsRoute
   '/_authenticated/admin/onboarded': typeof AuthenticatedAdminOnboardedRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/admin/src/routes/_authenticated/admin/survey-completed': typeof AuthenticatedAdminSrcRoutesAuthenticatedAdminSurveyCompletedRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -110,6 +122,7 @@ export interface FileRouteTypes {
     | '/admin/interns'
     | '/admin/onboarded'
     | '/admin/'
+    | '/admin/src/routes/admin/survey-completed'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -119,6 +132,7 @@ export interface FileRouteTypes {
     | '/admin/interns'
     | '/admin/onboarded'
     | '/admin'
+    | '/admin/src/routes/admin/survey-completed'
   id:
     | '__root__'
     | '/'
@@ -130,6 +144,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/interns'
     | '/_authenticated/admin/onboarded'
     | '/_authenticated/admin/'
+    | '/_authenticated/admin/src/routes/_authenticated/admin/survey-completed'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -202,6 +217,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminOnboardedRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/src/routes/_authenticated/admin/survey-completed': {
+      id: '/_authenticated/admin/src/routes/_authenticated/admin/survey-completed'
+      path: '/src/routes/admin/survey-completed'
+      fullPath: '/admin/src/routes/admin/survey-completed'
+      preLoaderRoute: typeof AuthenticatedAdminSrcRoutesAuthenticatedAdminSurveyCompletedRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
   }
 }
 
@@ -211,6 +233,7 @@ interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminInternsRoute: typeof AuthenticatedAdminInternsRoute
   AuthenticatedAdminOnboardedRoute: typeof AuthenticatedAdminOnboardedRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedAdminSrcRoutesAuthenticatedAdminSurveyCompletedRoute: typeof AuthenticatedAdminSrcRoutesAuthenticatedAdminSurveyCompletedRoute
 }
 
 const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
@@ -220,6 +243,8 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
     AuthenticatedAdminInternsRoute: AuthenticatedAdminInternsRoute,
     AuthenticatedAdminOnboardedRoute: AuthenticatedAdminOnboardedRoute,
     AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+    AuthenticatedAdminSrcRoutesAuthenticatedAdminSurveyCompletedRoute:
+      AuthenticatedAdminSrcRoutesAuthenticatedAdminSurveyCompletedRoute,
   }
 
 const AuthenticatedAdminRouteRouteWithChildren =
