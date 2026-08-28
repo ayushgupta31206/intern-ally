@@ -309,3 +309,68 @@ export const getOnboarded = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { data } = await context.supabase
+      .from("onboarded_companies")
+      .select("id, name, onboarded_by, date_onboarded, notes")
+      .eq("owner_id", context.userId)
+      .order("date_onboarded", { ascending: false })
+      .limit(2000);
+    return data ?? [];
+  });
+
+export const markSurveyCompleted = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) =>
+    z.object({ id: z.string().uuid(), notes: z.string().max(2000).optional() }).parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    const db = context.supabase;
+    const owner = context.userId;
+
+    const { data: company } = await db
+      .from("companies")
+      .select("id, name, assigned_to, interns(name)")
+      .eq("id", data.id)
+      .eq("owner_id", owner)
+      .maybeSingle();
+    if (!company) return { ok: false as const, message: "Company not found" };
+
+    const { error } = await db.from("survey_completed_companies").insert({
+      name: company.name,
+      intern_id: company.assigned_to,
+      completed_by: (company.interns as { name: string } | null)?.name ?? null,
+      date_completed: today(),
+      notes: data.notes?.trim() || null,
+      owner_id: owner,
+    });
+    if (error) return { ok: false as const, message: error.message };
+
+    await db.from("companies").delete().eq("id", company.id).eq("owner_id", owner);
+    return { ok: true as const, message: `${company.name} moved to Survey completed.` };
+  });
+
+export const getSurveyCompleted = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data } = await context.supabase
+      .from("survey_completed_companies")
+      .select("id, name, completed_by, date_completed, notes")
+      .eq("owner_id", context.userId)
+      .order("date_completed", { ascending: false })
+      .limit(2000);
+    return data ?? [];
+  });
+
+/** Returns the intern row matching the signed-in Google email, if any. */
+export const getMyIntern = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const email = (context.claims as { email?: string } | null)?.email;
+    if (!email) return null;
+    const { data } = await context.supabase
+      .from("interns")
+      .select("id, name, email, owner_id")
+      .ilike("email", email)
+      .limit(1)
+      .maybeSingle();
+    return data ?? null;
+  });

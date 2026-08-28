@@ -17,6 +17,9 @@ export type Database = {
       companies: {
         Row: {
           assigned_to: string | null
+          contact_designation: string | null
+          contact_email: string | null
+          contact_name: string | null
           created_at: string
           date_assigned: string | null
           id: string
@@ -28,6 +31,9 @@ export type Database = {
         }
         Insert: {
           assigned_to?: string | null
+          contact_designation?: string | null
+          contact_email?: string | null
+          contact_name?: string | null
           created_at?: string
           date_assigned?: string | null
           id?: string
@@ -39,6 +45,9 @@ export type Database = {
         }
         Update: {
           assigned_to?: string | null
+          contact_designation?: string | null
+          contact_email?: string | null
+          contact_name?: string | null
           created_at?: string
           date_assigned?: string | null
           id?: string
