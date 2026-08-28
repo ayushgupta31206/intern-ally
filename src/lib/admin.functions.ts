@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { parseCompanyNames, shuffle, today } from "./admin-helpers";
+import { parseCompanyRows, shuffle, today } from "./admin-helpers";
 
 /** Whoever is signed in with Google gets their own admin workspace. */
 export const getOverview = createServerFn({ method: "GET" })
@@ -64,8 +64,8 @@ export const addCompanies = createServerFn({ method: "POST" })
     const db = context.supabase;
     const owner = context.userId;
 
-    const names = parseCompanyNames(data.raw);
-    if (names.length === 0) return { added: 0, skipped: 0, parsed: 0 };
+    const rows = parseCompanyRows(data.raw);
+    if (rows.length === 0) return { added: 0, skipped: 0, parsed: 0 };
 
     const { data: existingRows } = await db
       .from("companies")
@@ -73,11 +73,17 @@ export const addCompanies = createServerFn({ method: "POST" })
       .eq("owner_id", owner)
       .limit(50_000);
     const existing = new Set((existingRows ?? []).map((row) => row.name.toLowerCase()));
-    const fresh = names.filter((name) => !existing.has(name.toLowerCase()));
+    const fresh = rows.filter((row) => !existing.has(row.name.toLowerCase()));
 
     let added = 0;
     for (let i = 0; i < fresh.length; i += 500) {
-      const chunk = fresh.slice(i, i + 500).map((name) => ({ name, owner_id: owner }));
+      const chunk = fresh.slice(i, i + 500).map((row) => ({
+        name: row.name,
+        contact_name: row.contactName,
+        contact_designation: row.contactDesignation,
+        contact_email: row.contactEmail,
+        owner_id: owner,
+      }));
       const { data: inserted, error } = await db.from("companies").insert(chunk).select("id");
       if (error) {
         for (const row of chunk) {
@@ -88,7 +94,7 @@ export const addCompanies = createServerFn({ method: "POST" })
         added += inserted?.length ?? 0;
       }
     }
-    return { added, skipped: names.length - added, parsed: names.length };
+    return { added, skipped: rows.length - added, parsed: rows.length };
   });
 
 export const deleteCompany = createServerFn({ method: "POST" })
@@ -124,7 +130,9 @@ export const getPool = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { data } = await context.supabase
       .from("companies")
-      .select("id, name, status, date_assigned, outcome, interns(name)")
+      .select(
+        "id, name, status, date_assigned, outcome, contact_name, contact_designation, contact_email, interns(name)",
+      )
       .eq("owner_id", context.userId)
       .order("created_at", { ascending: false })
       .limit(500);
@@ -134,6 +142,9 @@ export const getPool = createServerFn({ method: "GET" })
       status: row.status,
       dateAssigned: row.date_assigned,
       outcome: row.outcome,
+      contactName: row.contact_name,
+      contactDesignation: row.contact_designation,
+      contactEmail: row.contact_email,
       internName: (row.interns as { name: string } | null)?.name ?? null,
     }));
   });
@@ -298,67 +309,3 @@ export const getOnboarded = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { data } = await context.supabase
-      .from("onboarded_companies")
-      .select("id, name, onboarded_by, date_onboarded, notes")
-      .eq("owner_id", context.userId)
-      .order("date_onboarded", { ascending: false })
-      .limit(2000);
-    return data ?? [];
-  });
-
-export const markSurveyCompleted = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) =>
-    z.object({ id: z.string().uuid(), notes: z.string().max(2000).optional() }).parse(data),
-  )
-  .handler(async ({ data, context }) => {
-    const db = context.supabase;
-    const owner = context.userId;
-
-    const { data: company } = await db
-      .from("companies")
-      .select("id, name, assigned_to, interns(name)")
-      .eq("id", data.id)
-      .eq("owner_id", owner)
-      .maybeSingle();
-    if (!company) return { ok: false as const, message: "Company not found" };
-
-    const { error } = await db.from("survey_completed_companies").insert({
-      name: company.name,
-      intern_id: company.assigned_to,
-      completed_by: (company.interns as { name: string } | null)?.name ?? null,
-      date_completed: today(),
-      notes: data.notes?.trim() || null,
-      owner_id: owner,
-    });
-    if (error) return { ok: false as const, message: error.message };
-
-    await db.from("companies").delete().eq("id", company.id).eq("owner_id", owner);
-    return { ok: true as const, message: `${company.name} moved to Survey Completed.` };
-  });
-
-export const getSurveyCompleted = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
-    const { data } = await context.supabase
-      .from("survey_completed_companies")
-      .select("id, name, completed_by, date_completed, notes")
-      .eq("owner_id", context.userId)
-      .order("date_completed", { ascending: false })
-      .limit(2000);
-    return data ?? [];
-  });
-
-/** Is the signed-in Google account on someone's intern list? */
-export const getMyIntern = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
-    const email = (context.claims as { email?: string }).email?.toLowerCase();
-    if (!email) return null;
-    const { data } = await context.supabase
-      .from("interns")
-      .select("id, name, email")
-      .eq("email", email)
-      .limit(1);
-    return data?.[0] ?? null;
-  });
