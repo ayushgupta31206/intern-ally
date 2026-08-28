@@ -123,6 +123,47 @@ export type Database = {
           },
         ]
       }
+      survey_completed_companies: {
+        Row: {
+          completed_by: string | null
+          created_at: string
+          date_completed: string
+          id: string
+          intern_id: string | null
+          name: string
+          notes: string | null
+          owner_id: string
+        }
+        Insert: {
+          completed_by?: string | null
+          created_at?: string
+          date_completed?: string
+          id?: string
+          intern_id?: string | null
+          name: string
+          notes?: string | null
+          owner_id?: string
+        }
+        Update: {
+          completed_by?: string | null
+          created_at?: string
+          date_completed?: string
+          id?: string
+          intern_id?: string | null
+          name?: string
+          notes?: string | null
+          owner_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "survey_completed_companies_intern_id_fkey"
+            columns: ["intern_id"]
+            isOneToOne: false
+            referencedRelation: "interns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
