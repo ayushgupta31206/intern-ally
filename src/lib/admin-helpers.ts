@@ -58,4 +58,29 @@ export function parseCompanyRows(raw: string): ParsedCompanyRow[] {
 
   for (const [index, line] of lines.entries()) {
     if (!line.trim()) continue;
-    const fields =
+    const fields = splitCsvLine(line).map((field) => field.trim());
+    const name = fields[0] ?? "";
+    if (!name) continue;
+
+    // Skip an obvious header row (only checked on the very first non-empty line).
+    if (index === 0 && HEADER_HINTS.some((hint) => name.toLowerCase() === hint)) continue;
+
+    const key = name.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+
+    const first = fields[2]?.trim() || "";
+    const last = fields[3]?.trim() || "";
+    const contactName = [first, last].filter(Boolean).join(" ").trim() || null;
+    const contactDesignation = fields[4]?.trim() || null;
+    const contactEmail = fields[5]?.trim() || null;
+
+    out.push({ name, contactName, contactDesignation, contactEmail });
+  }
+  return out;
+}
+
+/** Back-compat: plain list of names, e.g. for one-per-line paste with no CSV columns. */
+export function parseCompanyNames(raw: string): string[] {
+  return parseCompanyRows(raw).map((row) => row.name);
+}
