@@ -7,7 +7,7 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { getAssignments, markOnboarded } from "@/lib/admin.functions";
+import { getAssignments, markOnboarded, markSurveyCompleted } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/assignments")({
   head: () => ({
@@ -29,12 +29,14 @@ const OUTCOME_LABELS: Record<string, string> = {
   not_interested: "not interested",
   didnt_pick: "didn't pick",
   onboard_request: "onboarded?",
+  survey_completed: "survey completed",
 };
 
 function Assignments() {
   const queryClient = useQueryClient();
   const fetchAssignments = useServerFn(getAssignments);
   const onboard = useServerFn(markOnboarded);
+  const surveyComplete = useServerFn(markSurveyCompleted);
   const [search, setSearch] = useState("");
   const [readyOnly, setReadyOnly] = useState(false);
 
@@ -45,6 +47,19 @@ function Assignments() {
 
   const move = useMutation({
     mutationFn: (id: string) => onboard({ data: { id } }),
+    onSuccess: (result) => {
+      if (!result.ok) {
+        toast.error(result.message);
+        return;
+      }
+      toast.success(result.message);
+      queryClient.invalidateQueries();
+    },
+    onError: () => toast.error("Couldn't move that company"),
+  });
+
+  const completeSurvey = useMutation({
+    mutationFn: (id: string) => surveyComplete({ data: { id } }),
     onSuccess: (result) => {
       if (!result.ok) {
         toast.error(result.message);
@@ -128,6 +143,15 @@ function Assignments() {
                     >
                       <CheckCircle2 className="mr-1.5 h-4 w-4" />
                       Mark onboarded
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => completeSurvey.mutate(row.id)}
+                      disabled={completeSurvey.isPending}
+                    >
+                      <CheckCircle2 className="mr-1.5 h-4 w-4" />
+                      Mark survey completed
                     </Button>
                   </li>
                 ))}
