@@ -2,10 +2,16 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
-import { Trash2, Upload } from "lucide-react";
+import { Mail, Trash2, Upload } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,6 +29,18 @@ export const Route = createFileRoute("/_authenticated/admin/companies")({
   component: CompanyPool,
 });
 
+type PoolRow = {
+  id: string;
+  name: string;
+  status: string;
+  dateAssigned: string | null;
+  outcome: string | null;
+  contactName: string | null;
+  contactDesignation: string | null;
+  contactEmail: string | null;
+  internName: string | null;
+};
+
 function CompanyPool() {
   const queryClient = useQueryClient();
   const fetchPool = useServerFn(getPool);
@@ -32,6 +50,7 @@ function CompanyPool() {
   const [raw, setRaw] = useState("");
   const [filter, setFilter] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [viewing, setViewing] = useState<PoolRow | null>(null);
 
   const pool = useQuery({ queryKey: ["pool"], queryFn: () => fetchPool() });
 
@@ -121,7 +140,9 @@ function CompanyPool() {
       <div>
         <h1 className="text-2xl font-bold">Company pool</h1>
         <p className="text-sm text-muted-foreground">
-          One company per line, or upload a CSV (first column is used). Duplicates are ignored.
+          One company per line, or upload a CSV (company, industry, first name, last name,
+          designation, email — extra columns are ignored). Duplicate companies keep the first
+          contact seen.
         </p>
       </div>
 
@@ -201,7 +222,17 @@ function CompanyPool() {
                 onChange={() => toggleOne(row.id)}
                 aria-label={`Select ${row.name}`}
               />
-              <span className="min-w-0 flex-1 truncate font-medium">{row.name}</span>
+              <button
+                type="button"
+                onClick={() => setViewing(row)}
+                className="min-w-0 flex-1 truncate text-left font-medium hover:underline"
+                title="View contact details"
+              >
+                {row.name}
+              </button>
+              {row.contactEmail && (
+                <Mail className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
+              )}
               {row.status === "assigned" ? (
                 <span className="hidden text-xs text-muted-foreground sm:inline">
                   {row.internName} · {row.dateAssigned}
@@ -226,6 +257,53 @@ function CompanyPool() {
           ))}
         </ul>
       </section>
+
+      <Dialog open={!!viewing} onOpenChange={(open) => !open && setViewing(null)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>{viewing?.name}</DialogTitle>
+          </DialogHeader>
+          {viewing && (
+            <div className="space-y-3 text-sm">
+              {viewing.contactName || viewing.contactDesignation || viewing.contactEmail ? (
+                <>
+                  {viewing.contactName && (
+                    <div>
+                      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                        Contact
+                      </p>
+                      <p className="font-medium">{viewing.contactName}</p>
+                    </div>
+                  )}
+                  {viewing.contactDesignation && (
+                    <div>
+                      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                        Designation
+                      </p>
+                      <p>{viewing.contactDesignation}</p>
+                    </div>
+                  )}
+                  {viewing.contactEmail && (
+                    <div>
+                      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                        Email
+                      </p>
+                      
+                        href={`mailto:${viewing.contactEmail}`}
+                        className="text-primary underline underline-offset-2"
+                      >
+                        {viewing.contactEmail}
+                      </a>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <p className="text-muted-foreground">No contact details on file for this company.</p>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
